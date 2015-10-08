@@ -1,0 +1,272 @@
+/*
+CMPS12A HW 9
+
+In this program, I make use of recursive functions to continuously replay my function. While loops may have also been effective here, but I decided to try something different.
+I didn't totally understand how everything fit together, in my mind I would ask the user for inputs individually, where the example is reading directly off of a text file...
+I did my best to create the program as was required, but I was also forced by limitations in understanding to do it as best I understood what was requested of me.
+
+Enjoy =)
+
+*/
+
+
+import java.util.ArrayList;
+import java.util.Random;
+import static java.lang.System.out;
+import java.util.*;
+
+public class Booking 
+{
+	public static void main(String[] args)
+	{
+		Flights initial = new Flights();
+		//creating new flights	
+		
+		initial.repeater();
+		//calling all else
+		
+	}
+}
+
+abstract class Route {
+	public ArrayList<String> routes = new ArrayList<String>();
+	//arraylist for routes
+ 	public ArrayList<String> flights = new ArrayList<String>();
+	//arraylist for flights
+	public static String destinations, sources;
+	//input strings
+	
+	public static Scanner scanner = new Scanner(System.in);
+	//new scanner object
+	
+
+	
+	public static String Source()
+	{
+			System.out.println("Please enter your departure airport's code in capital letters");
+			//i.e. SFO
+			
+			destinations = scanner.next();
+			return destinations;
+			//scans input from user and returns that input as the source airport.
+	}
+	
+	public static String Destination()
+	{
+			System.out.println("Please enter your destination airport's code in capitol letters");
+			//i.e. SJC
+			
+			sources = scanner.next();
+			return sources;
+			//sscans input from user and returns that input as departure airport
+	}
+	
+	public Boolean routeFinder(String input1, String input2)
+	{
+		boolean routeExists = false;
+		//route does not inititially exist
+
+		for(int a = 0; a < flights.size(); a++)
+		{
+			if( (destinations.equals(flights.get(a))) && (sources.equals(flights.get(a+1))) )
+				//if source equals the for loop's flights array list location, and destination equals one more than the for loop's flight array list location,
+			{
+				routeExists = true;
+				//route is found!
+			}
+		}
+		return routeExists;
+	} 
+	
+}
+
+
+class Flights extends Route
+	{
+		public static int numflights, n = 0, seatsRemaining;
+		public static Scanner scanner = new Scanner(System.in);
+		public static String dates;
+		
+		
+		Flights()
+			//constructor for the flights class. I think I probably tried to do too much here, but this all seems necessary.
+		{
+			
+			System.out.println("How many flights are there?");		
+			numflights = scanner.nextInt();
+			/*read in the number of flights, I tried to use the < function to read from the text file, but I don't know what I was missing...
+				I wasn't successful.
+			
+			*/
+			System.out.println("Enter routes as SOURCE DESTINATION AIRLINE FLIGHTID DATE");	
+			//instructing the user to input all flight data as so, IE SJC SFO AIRCANADA 07221995
+			try
+			{
+				while(n < (numflights * 5))
+					//only functions while n is less than the number of flights times 5
+				{
+					String allinput = scanner.next();
+					//reads imput from user
+					flights.add(new String(allinput));
+					//adds input data to flights arraylist.
+					n++;
+				}
+			} catch (Exception e)
+				{
+				System.out.println("I'm afraid an error has occured" + e);
+				}
+			
+		}	
+		
+		public void repeater()
+		{
+			System.out.println("Do you wish to book a flight? y/n");
+			//prompting user for their input
+			String input = scanner.next();
+			//scanning in from user
+			if((input.charAt(0) == 'y') || ((input.charAt(0) == 'y') && (input.charAt(1) == 'e') && (input.charAt(2) == 's')))
+				//if the user types in y or yes
+				{
+				System.out.println("Okay.");
+					if(routeFinder(Source(), Destination()))
+					//if the source and destination prove to be true,
+					{			
+						System.out.println("Routes Exists ");
+						//tell the user that routes exist
+						flightFinder();
+						//start flight finder method to find them their flight
+					} 	else 
+							{
+					System.out.println("Sorry, no Routes currently exist between " + sources +  " and "  + destinations + ".");
+					//tell them the route the want does not exist in the system currently
+					repeater();
+					//recursion to ask if they want to continue or not.
+							}
+				} else 
+					{
+				System.out.println("Okay. Goodbye.");
+				System.exit(0);
+				//if they don't want to continue, then bye.
+		}			}
+		
+		public void flightFinder()
+		{
+			boolean flightExists = false;
+			//calls date method to get the date of travel from user
+			for(int a = 0; a < flights.size(); a++)
+				//tries all values of the flights arrayList
+			{
+				if( (sources.equals(flights.get(a))) && (destinations.equals(flights.get(a+1))) && (date().equals(flights.get(a+4))) )
+					//if sources equals the first value tried and destinations equals the second value and dates equals the third value
+				{
+					flightExists = true;
+					//set flightexists to true
+					System.out.println("Flights from " + sources + " to " + destinations + " on " + dates + " are:");
+					//explaining coming information for the user
+					break;
+				}
+			}
+			
+			if(flightExists)
+			{
+				seats();
+				//if flights exists is true, calling seats
+			} else 
+				{
+				System.out.println("Sorry, no Routes currently exist between " + sources +  " and "  + destinations + " on " + dates + ".");
+				//if it's not true, telling the user they cannot book this route on this day
+				repeater();
+				//recursion
+				}
+		
+		}
+		
+		public void airlines(String airlineFound)
+		{
+			System.out.print("Airline:" + airlineFound + "   ");
+			//if airline is found display the airline
+			
+		}
+		
+		public static void flightId(String flightIdFound)
+		{
+			System.out.print("Flight ID:" + flightIdFound + "   ");
+			//displaying the flight ID
+		}
+		
+		public static String date()
+		{
+			System.out.println("Please enter your departure date (mmddyyy)");
+			dates = scanner.next();
+			return dates;
+			//prompting user, scanning input for date, and returning that input.
+		
+		}
+		
+		public int seats()
+		{
+			int seatsRemaining = 100;
+			//seatsRemaining beings at 100
+	
+			
+			for(int a = 0; a < flights.size(); a++)
+			{
+					if( (destinations.equals(flights.get(a))) && (sources.equals(flights.get(a+1))) && (dates.equals(flights.get(a+4))) )
+						//if a flight in the arraylist is found to match the criteria entered by the user
+					{
+							airlines(flights.get(a + 2));
+							flightId(flights.get(a + 3));
+							//a is the for loop's position, which is the departure airport. two numbers beyond that is the airlines of that flight, and three numbers beyond is the flight ID
+							
+							System.out.print("Number of remaining seats is " + seatsRemaining + " . \n");
+							//displaying seats remaining.
+							routes.add(new String(flights.get(a+2)));
+							routes.add(new String(flights.get(a+3)));
+							//adding found flights on given route to routes arraylist
+							routes.add(new String(String.valueOf(seatsRemaining)));
+							
+							
+					}
+				}				
+				
+	
+				System.out.println(" \n Please enter the flight ID of the flight you would like to book.");
+				String flightIDs = scanner.next();
+				//prompting user to enter the ID of the flight they would like to book and scanning it in
+				
+				for(int c = 0; c < routes.size(); c ++)
+					//trying all possibilities in the routes array
+				{
+					if(flightIDs.equals(routes.get(c)))
+					{
+						System.out.println("Please Enter how many tickets you would like to book.");
+						int tickets = scanner.nextInt();
+						//scanning in the number of tickets the user would like to purchase
+				
+						if( (tickets <= seatsRemaining))
+							//if tickets is a valid number, not exceeding the remaining seats
+						{
+							seatsRemaining -= tickets;
+							//seatsRemaining is reduced by tickets
+							
+							
+							System.out.print("Number of remaining seats is " + seatsRemaining + " . \n");
+							//displays remaining seats
+							repeater();
+							//recursion to ask if the user would like to continue
+						} else 
+							{
+							System.out.println("I'm sorry, insufficient seats remain on " + routes.get(c) + " to book " + tickets + " tickets.");
+							//telling the user they cannot order that many tickets.
+							repeater();
+							//recursion to again ask if the user if they still want to book tickets
+							}
+					}
+					
+				}
+
+			return seatsRemaining;
+		}
+		
+
+	}
